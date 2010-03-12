@@ -167,7 +167,7 @@ sub _check_into_code {
 
         foreach my $p(@{$pad}){
             if(defined $p && !$p->{outside}){
-                if(defined($p->{count}) && $p->{count} == 0){
+                if($p->{count} ~~ 0){
                     next if $args->{ignore_vars}{$p->{name}};
 
                     if(my $cb = $args->{ignore_if}){
