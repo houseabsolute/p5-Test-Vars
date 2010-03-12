@@ -379,7 +379,7 @@ Test::Vars finds unused variables in order to keep the source code tidy.
 
 =head1 INTERFACE
 
-=head2 Exporetd
+=head2 Exported
 
 =head3 all_vars_ok(%args)
 
@@ -401,7 +401,7 @@ tell it to the test routines:
 =back
 
 Note that C<$self> will be ignored by default unless you pass
-explicitly C<< { '$self' => 0 } > to C<ignore_vars>.
+explicitly C<< { '$self' => 0 } >> to C<ignore_vars>.
 
 =head3 vars_ok($lib, %args)
 

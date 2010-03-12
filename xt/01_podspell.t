@@ -17,3 +17,7 @@ Goro Fuji (gfx)
 gfx
 gfuji(at)cpan.org
 Test::Vars
+AST
+backend
+submodules
+cpan
