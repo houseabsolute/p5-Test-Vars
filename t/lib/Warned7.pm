@@ -9,4 +9,10 @@ sub foo {
     return;
 }
 
+sub bar {
+    foreach my $unused_var(@_){
+
+    }
+    return;
+}
 1;

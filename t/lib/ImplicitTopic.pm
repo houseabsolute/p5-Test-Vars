@@ -3,8 +3,7 @@ use 5.010_00;
 use strict;
 
 sub foo {
-    my $_;
-    while (@_) {
+    while (my $_ = <>) {
         say;
     }
 }

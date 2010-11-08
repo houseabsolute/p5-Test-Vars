@@ -109,7 +109,7 @@ sub _check_vars {
         }
     }
 
-    $builder->note("checking $file ...") if _VERBOSE;
+    $builder->note("checking $package in $file ...") if _VERBOSE;
     return _check_into_stash($builder,
         *{qualify_to_ref('', $package)}{HASH}, $file, $args);
 }
@@ -162,7 +162,7 @@ sub _check_into_code {
     while(my(undef, $cv_info) = each %info){
         my $pad = $cv_info->{pad};
 
-        $builder->note($cv_info->{name}) if _VERBOSE > 1;
+        $builder->note("looking into $cv_info->{name}") if _VERBOSE > 1;
 
         foreach my $p(@{$pad}){
             next if !( defined $p && !$p->{outside} );
