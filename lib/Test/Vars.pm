@@ -415,6 +415,10 @@ While C<Perl::Critic>, the backend of C<Test::Perl::Critic>, scans the source
 code as texts, this modules scans the compiled opcodes (or AST: abstract syntax
 tree) using the C<B> module. See also C<B> and its submodules.
 
+=head1 CONFIGURATION
+
+C<TEST_VERBOSE = 1 | 2 > shows the way this module works.
+
 =head1 DEPENDENCIES
 
 Perl 5.10.0 or later.
