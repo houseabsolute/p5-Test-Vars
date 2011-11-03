@@ -3,7 +3,7 @@ use 5.010_000;
 use strict;
 use warnings;
 
-our $VERSION = '0.001';
+our $VERSION = '0.002';
 
 our @EXPORT = qw(all_vars_ok vars_ok);
 
@@ -195,9 +195,13 @@ my $op_enteriter;
 my $op_entereval; # string eval
 my @op_svusers;
 BEGIN{
-    foreach my $op(qw(padsv padav padhv aelemfast)){
+    foreach my $op(qw(padsv padav padhv)){
         $padops[B::opnumber($op)]++;
     }
+    # blead commit 93bad3fd55489cbd split aelemfast into two ops.
+    # Prior to that, 'aelemfast' handled lexicals too.
+    my $aelemfast = B::opnumber('aelemfast_lex');
+    $padops[$aelemfast == -1 ? B::opnumber('aelemfast') : $aelemfast]++;
 
     $op_anoncode = B::opnumber('anoncode');
     $padops[$op_anoncode]++;
