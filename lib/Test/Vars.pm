@@ -309,7 +309,6 @@ sub _count_padvars {
             # my($var) = @_;
             #    ^^^^     padsv/non-void context
             #          ^  sassign/void context
-            my $o = $op->next;
             for(my $o = $op->next; ${$o} && ref($o) ne 'B::COP'; $o = $o->next){
                 next if !$op_svusers[ $o->type ];
                 next if( ($o->flags & B::OPf_WANT ) != B::OPf_WANT_VOID );
