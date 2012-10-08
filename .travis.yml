@@ -1,0 +1,13 @@
+language: perl
+
+perl:
+    - "5.10"
+    - "5.12"
+    - "5.14"
+    - "5.16"
+
+install:
+    - cpanm Module::Install parent Test::More
+script:
+    - perl Makefile.PL
+    - make test

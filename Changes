@@ -1,4 +1,7 @@
 Revision history for Perl extension Test::Vars
 
+0.002 
+    - fix for perl 5.16+ by Nicholas Clark, committed by Olivier Mengué
+
 0.001 Wed Mar 10 12:32:56 2010
     - original version; created by Module::Setup

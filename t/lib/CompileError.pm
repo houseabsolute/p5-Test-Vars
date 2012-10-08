@@ -1,1 +1,1 @@
-die "Intentinal compile error.\n";
+die "Intentional compile error.\n";
