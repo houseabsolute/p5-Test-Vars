@@ -10,7 +10,9 @@ Makefile*
 !Makefile.PL
 *blib
 META.yml
+META.json
 MYMETA.yml
+MYMETA.json
 inc/
 MANIFEST
 *.out
