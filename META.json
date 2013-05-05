@@ -1,0 +1,76 @@
+{
+   "abstract" : "Detects unused variables",
+   "author" : [
+      "Goro Fuji (gfx) <gfuji(at)cpan.org>"
+   ],
+   "dynamic_config" : 0,
+   "generated_by" : "Minilla/v0.3.2, CPAN::Meta::Converter version 2.130880",
+   "license" : [
+      "perl_5"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
+   },
+   "name" : "Test-Vars",
+   "no_index" : {
+      "directory" : [
+         "t",
+         "xt",
+         "inc",
+         "share",
+         "eg",
+         "examples",
+         "author"
+      ]
+   },
+   "prereqs" : {
+      "build" : {
+         "requires" : {
+            "ExtUtils::MakeMaker" : "6.59",
+            "Test::More" : "0.88"
+         }
+      },
+      "configure" : {
+         "requires" : {
+            "CPAN::Meta" : "0",
+            "CPAN::Meta::Prereqs" : "0",
+            "Module::Build" : "0.38"
+         }
+      },
+      "develop" : {
+         "requires" : {
+            "Test::CPAN::Meta" : "0",
+            "Test::MinimumVersion" : "0.10108",
+            "Test::Pod" : "1.41",
+            "Test::Spellunker" : "v0.2.2"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "B" : "0",
+            "parent" : "0",
+            "perl" : "5.010000"
+         }
+      }
+   },
+   "release_status" : "unstable",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/gfx/p5-Test-Vars/issues"
+      },
+      "homepage" : "https://github.com/gfx/p5-Test-Vars",
+      "repository" : {
+         "type" : "git",
+         "url" : "git://github.com/gfx/p5-Test-Vars.git",
+         "web" : "https://github.com/gfx/p5-Test-Vars"
+      }
+   },
+   "version" : "0.002",
+   "x_contributors" : [
+      "Nicholas Clark <nick@ccl4.org>",
+      "Olivier MenguÃ© <dolmen@cpan.org>",
+      "Fuji, Goro <gfuji@cpan.org>",
+      "Fuji, Goro <g.psy.va@gmail.com>"
+   ]
+}

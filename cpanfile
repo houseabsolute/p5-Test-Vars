@@ -1,0 +1,8 @@
+requires 'B';
+requires 'parent';
+requires 'perl', '5.010';
+
+on build => sub {
+    requires 'ExtUtils::MakeMaker', '6.59';
+    requires 'Test::More', '0.88';
+};

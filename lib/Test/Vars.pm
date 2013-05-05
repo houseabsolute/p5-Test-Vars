@@ -415,7 +415,7 @@ C<Test::Vars> is similar to a part of C<Test::Perl::Critic>,but the mechanism
 is different.
 
 While C<Perl::Critic>, the backend of C<Test::Perl::Critic>, scans the source
-code as texts, this modules scans the compiled opcodes (or AST: abstract syntax
+code as texts, this modules scans the compiled opcode (or AST: abstract syntax
 tree) using the C<B> module. See also C<B> and its submodules.
 
 =head1 CONFIGURATION

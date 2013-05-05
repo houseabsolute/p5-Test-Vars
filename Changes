@@ -1,5 +1,7 @@
 Revision history for Perl extension Test::Vars
 
+{{$NEXT}}
+
 0.002 2012-10-09 08:50:46
     - fix for perl 5.16+ by Nicholas Clark, committed by Olivier Mengué
 
