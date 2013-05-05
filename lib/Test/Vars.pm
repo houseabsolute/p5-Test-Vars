@@ -3,7 +3,7 @@ use 5.010_000;
 use strict;
 use warnings;
 
-our $VERSION = '0.002';
+our $VERSION = '0.003';
 
 our @EXPORT = qw(all_vars_ok vars_ok);
 
@@ -54,7 +54,7 @@ sub _vars_ok {
     my $pid = fork();
     if(defined $pid){
         if($pid != 0) { # self
-            wait;
+            waitpid $pid, 0;
 
             return $builder->ok($? == 0, $file);
         }
@@ -365,7 +365,7 @@ Test::Vars - Detects unused variables
 
 =head1 VERSION
 
-This document describes Test::Vars version 0.001.
+This document describes Test::Vars version 0.003.
 
 =head1 SYNOPSIS
 

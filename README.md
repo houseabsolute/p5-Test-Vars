@@ -4,7 +4,7 @@ Test::Vars - Detects unused variables
 
 # VERSION
 
-This document describes Test::Vars version 0.001.
+This document describes Test::Vars version 0.003.
 
 # SYNOPSIS
 
