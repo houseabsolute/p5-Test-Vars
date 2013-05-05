@@ -4,7 +4,7 @@ Test::Vars - Detects unused variables
 
 # VERSION
 
-This document describes Test::Vars version 0.003.
+This document describes Test::Vars version 0.004.
 
 # SYNOPSIS
 
@@ -54,6 +54,12 @@ tree) using the `B` module. See also `B` and its submodules.
 # CONFIGURATION
 
 `TEST_VERBOSE = 1 | 2 ` shows the way this module works.
+
+# CAVEATS
+
+https://rt.cpan.org/Ticket/Display.html?id=60018
+
+https://rt.cpan.org/Ticket/Display.html?id=82411
 
 # DEPENDENCIES
 

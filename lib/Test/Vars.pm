@@ -3,7 +3,7 @@ use 5.010_000;
 use strict;
 use warnings;
 
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 
 our @EXPORT = qw(all_vars_ok vars_ok);
 
@@ -365,7 +365,7 @@ Test::Vars - Detects unused variables
 
 =head1 VERSION
 
-This document describes Test::Vars version 0.003.
+This document describes Test::Vars version 0.004.
 
 =head1 SYNOPSIS
 
