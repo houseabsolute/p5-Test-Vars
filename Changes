@@ -2,6 +2,9 @@ Revision history for Perl extension Test::Vars
 
 {{$NEXT}}
 
+0.005 2013-05-31T02:04:42Z
+    - Use skip_all instead of planning 0 tests (#4)
+
 0.004 2013-05-05T13:48:11Z
     - Remove an unnecessary use of smart match operator
 
