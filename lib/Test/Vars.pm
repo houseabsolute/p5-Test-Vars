@@ -31,6 +31,10 @@ sub all_vars_ok {
     my $manifest = maniread();
     my @libs    = grep{ m{\A lib/ .* [.]pm \z}xms } keys %{$manifest};
 
+    if (! @libs) {
+        $builder->plan(skip_all => "not lib/");
+    }
+
     $builder->plan(tests => scalar @libs);
 
     my $fail = 0;
