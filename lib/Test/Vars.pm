@@ -11,6 +11,8 @@ use parent qw(Test::Builder::Module);
 
 use B ();
 use ExtUtils::Manifest qw(maniread);
+use IO::Pipe;
+use Storable qw(freeze thaw);
 use Symbol qw(qualify_to_ref);
 
 use constant _VERBOSE       => ($ENV{TEST_VERBOSE} || 0);
@@ -55,15 +57,26 @@ sub _vars_ok {
 
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
+    my $pipe = IO::Pipe->new;
     my $pid = fork();
     if(defined $pid){
         if($pid != 0) { # self
+            $pipe->reader;
+            my $results = thaw(join('', <$pipe>));
             waitpid $pid, 0;
 
-            return $builder->ok($? == 0, $file);
+            my $is_ok = $builder->ok($? == 0, $file);
+
+            for my $result (@$results) {
+                my ($method, $message) = @$result;
+                $builder->$method($message);
+            }
+
+            return $is_ok;
         }
         else { # child
-            exit !_check_vars($builder, $file, $args);
+            $pipe->writer;
+            exit !_check_vars($file, $args, $pipe);
         }
     }
     else {
@@ -72,7 +85,10 @@ sub _vars_ok {
 }
 
 sub _check_vars {
-    my($builder, $file, $args) = @_;
+    my($file, $args, $pipe) = @_;
+
+    my @results;
+
     my $package = $file;
 
     if($file =~ /\./){ # $package seems a file
@@ -108,18 +124,22 @@ sub _check_vars {
 
         if($@){
             $@ =~ s/\n .*//xms;
-            $builder->diag("Test::Vars ignores $file because: $@");
+            push @results, [diag => "Test::Vars ignores $file because: $@"];
+            _pipe_results($pipe, @results);
             return 1;
         }
     }
 
-    $builder->note("checking $package in $file ...") if _VERBOSE;
-    return _check_into_stash($builder,
-        *{qualify_to_ref('', $package)}{HASH}, $file, $args);
+    push @results, [note => "checking $package in $file ..."];
+    my $check_result = _check_into_stash(
+        *{qualify_to_ref('', $package)}{HASH}, $file, $args, \@results);
+
+    _pipe_results($pipe, @results);
+    return $check_result;
 }
 
 sub _check_into_stash {
-    my($builder, $stash, $file, $args) = @_;
+    my($stash, $file, $args, $results) = @_;
     my $fail = 0;
 
     while(my $key = each %{$stash}){
@@ -134,12 +154,13 @@ sub _check_into_stash {
 
         if(($hashref || $coderef) && $gv->FILE =~ /\Q$file\E\z/xms){
             if($hashref && B::svref_2object($hashref)->NAME){ # stash
-                if(not _check_into_stash($builder, $hashref, $file, $args)){
-                    $fail++;
+                if(not _check_into_stash(
+                    $hashref, $file, $args, $results)){
+                        $fail++;
                 }
             }
             elsif($coderef){
-                if(not _check_into_code($builder, $coderef, $args)){
+                if(not _check_into_code($coderef, $args, $results)){
                     $fail++;
                 }
             }
@@ -150,7 +171,7 @@ sub _check_into_stash {
 }
 
 sub _check_into_code {
-    my($builder, $coderef, $args) = @_;
+    my($coderef, $args, $results) = @_;
 
     my $cv = B::svref_2object($coderef);
 
@@ -159,14 +180,14 @@ sub _check_into_code {
     }
 
     my %info;
-    _count_padvars($cv, \%info);
+    _count_padvars($cv, \%info, $results);
 
     my $fail = 0;
 
     while(my(undef, $cv_info) = each %info){
         my $pad = $cv_info->{pad};
 
-        $builder->note("looking into $cv_info->{name}") if _VERBOSE > 1;
+        push @$results, [note => "looking into $cv_info->{name}"] if _VERBOSE > 1;
 
         foreach my $p(@{$pad}){
             next if !( defined $p && !$p->{outside} );
@@ -180,17 +201,23 @@ sub _check_into_code {
                 }
 
                 my $c = $p->{context} || '';
-                $builder->diag("$p->{name} is used once in $cv_info->{name} $c");
+                push @$results, [diag => "$p->{name} is used once in $cv_info->{name} $c"];
                 $fail++;
             }
             elsif(_VERBOSE > 1){
-                $builder->note("$p->{name} is used $p->{count} times");
+                push @$results, [note => "$p->{name} is used $p->{count} times"];
             }
         }
     }
 
     return $fail == 0;
 
+}
+
+sub _pipe_results {
+    my ($pipe, @messages) = @_;
+    print $pipe freeze(\@messages);
+    close $pipe;
 }
 
 my @padops;
@@ -222,7 +249,7 @@ BEGIN{
 }
 
 sub _count_padvars {
-    my($cv, $global_info) = @_;
+    my($cv, $global_info, $results) = @_;
 
     my %info;
 
@@ -289,7 +316,7 @@ sub _count_padvars {
         if($optype == $op_anoncode){
             my $anon_cv = $padvars->ARRAYelt($targ);
             if($anon_cv->CvFLAGS & B::CVf_CLONE){
-                my $my_info = _count_padvars($anon_cv, $global_info);
+                my $my_info = _count_padvars($anon_cv, $global_info, $results);
 
                 $my_info->{outside} = \%info;
 
@@ -335,7 +362,7 @@ sub _count_padvars {
         B::walkoptree($root, '_scan_unused_vars');
     }
     else{
-        __PACKAGE__->builder->note("NULL body subroutine $name found");
+        push @$results, [note => "NULL body subroutine $name found"];
     }
 
     %info = (

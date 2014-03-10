@@ -1,6 +1,9 @@
 Revision history for Perl extension Test::Vars
 
 {{$NEXT}}
+    - This module now calls Test::Builder->diag and ->note _after_ calling
+      ->ok. This is more in line with how most test modules work. Patch by Ran
+      Eilam.
 
 0.005 2013-05-31T02:04:42Z
     - Use skip_all instead of planning 0 tests (#4)
