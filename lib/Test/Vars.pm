@@ -236,7 +236,7 @@ sub _count_padvars {
         if($padname->can('PVX')){
             my $pv = $padname->PVX;
 
-            if($pv ne '&' && !($padname->FLAGS & B::SVpad_OUR)){
+            if(defined $pv && $pv ne '&' && !($padname->FLAGS & B::SVpad_OUR)){
                 my %p;
 
                 $p{name}    = $pv;
