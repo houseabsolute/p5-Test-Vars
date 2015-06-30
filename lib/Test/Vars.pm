@@ -368,7 +368,7 @@ __END__
 
 =head1 NAME
 
-Test::Vars - Detects unused variables
+Test::Vars - Detects unused variables in perl modules
 
 =head1 VERSION
 
@@ -378,11 +378,18 @@ This document describes Test::Vars version 0.005.
 
     use Test::Vars;
 
-    all_vars_ok(); # check libs in MANIFEST
+    # Check all libs that are listed in the MANIFEST file
+    all_vars_ok();
+
+    # Check an arbitrary file
+    vars_ok('t/lib/MyLib.pm');
+
+    # Ignore some variables while checking
+    vars_ok 't/lib/MyLib2.pm', ignore_vars => [ '$an_unused_var' ];
 
 =head1 DESCRIPTION
 
-Test::Vars finds unused variables in order to keep the source code tidy.
+Test::Vars provides test functions to report unused variables either in an entire distribution or in some files of your choice in order to keep the source code tidy.
 
 =head1 INTERFACE
 
