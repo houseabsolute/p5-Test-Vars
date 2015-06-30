@@ -75,12 +75,15 @@ sub _check_vars {
     my($builder, $file, $args) = @_;
     my $package = $file;
 
-    if($file =~ /\./){ # $package seems a file
+    # Looks like a file name. Turn it into a package name.
+    if($file =~ /\./){
         $package =~ s{\A .* \b lib/ }{}xms;
         $package =~ s{[.]pm \z}{}xms;
         $package =~ s{/}{::}g;
     }
-    else{ # $file seems a file
+
+    # Looks like a package name. Make a file name from it.
+    else{
         $file .= '.pm';
         $file =~ s{::}{/}g;
     }
