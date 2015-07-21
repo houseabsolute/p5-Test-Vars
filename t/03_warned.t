@@ -14,9 +14,12 @@ my %errors = (
     Warned2 => [ [ '@an_unused_var', 'foo', 6 ] ],
     Warned3 => [ [ '%an_unused_var', 'foo', 6 ] ],
     Warned4 => [ [ '$an_unused_var', 'foo', 6 ] ],
+
+    # For some version of Perl, we get the warning on line 6 twice, for others
+    # we get 6 and 7.
     Warned5 => [
         [ '$unused_var', 'foo', 6 ],
-        [ '$unused_var', 'foo', 6 ],
+        [ '$unused_var', 'foo', [ 6, 7 ] ],
     ],
     Warned6 => [ [ '$unused_param', 'foo', 6 ] ],
 
@@ -37,12 +40,12 @@ foreach my $package ( sort keys %errors ) {
     ok( !$premature, "var_ok($path) had no premature output" );
     is( scalar @results, 1, "got one result from vars_ok($path)" );
     is(
-        $results[0]{fail_diag}, "\tFailed test (t/03_warned.t at line 36)\n",
+        $results[0]{fail_diag}, "\tFailed test (t/03_warned.t at line 39)\n",
         'failure message comes from inside this test file'
     );
 
     if ( @{$errors} == 1 ) {
-        is(
+        like(
             $results[0]{diag},
             _error( @{ $errors->[0] }, $package, $path ),
             "expected diag() from vars_ok($path)"
@@ -50,11 +53,9 @@ foreach my $package ( sort keys %errors ) {
     }
     else {
         my @errors = map { _error( @{$_}, $package, $path ) } @{$errors};
-        my $order1 = join q{}, @errors;
-        my $order2 = join q{}, @errors[ 1, 0 ];
         like(
             $results[0]{diag},
-            qr/\Q$order1\E|\Q$order2/,
+            qr/$errors[0]$errors[1]|$errors[1]$errors[0]/,
             "expected diag() from vars_ok($path)"
         );
     }
@@ -63,7 +64,12 @@ foreach my $package ( sort keys %errors ) {
 sub _error {
     my ( $var, $sub, $line, $package, $path ) = @_;
 
-    return "$var is used once in &${package}::$sub at $path line $line\n";
+    $line
+        = ref $line
+        ? qr/(?:$line->[0]|$line->[1])/
+        : qr/$line/;
+
+    return qr/\Q$var is used once in &${package}::$sub at $path line \E$line\n/;
 }
 
 done_testing;

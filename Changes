@@ -4,6 +4,9 @@ Revision history for Perl extension Test::Vars
     - This module now calls Test::Builder->diag and ->note _after_ calling
       ->ok. This is more in line with how most test modules work. Patch by Ran
       Eilam.
+    - Added a new exported sub, test_vars(), which does not output TAP. This
+      is useful for integrating this module with things like
+      Code::TidyAll. Patch by Dave Rolsky.
 
 0.005 2013-05-31T02:04:42Z
     - Use skip_all instead of planning 0 tests (#4)

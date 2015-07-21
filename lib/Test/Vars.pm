@@ -5,7 +5,7 @@ use warnings;
 
 our $VERSION = '0.005';
 
-our @EXPORT = qw(all_vars_ok vars_ok);
+our @EXPORT = qw(all_vars_ok test_vars vars_ok);
 
 use parent qw(Test::Builder::Module);
 
@@ -39,23 +39,44 @@ sub all_vars_ok {
 
     $builder->plan(tests => scalar @libs);
 
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
     my $fail = 0;
     foreach my $lib(@libs){
-        _vars_ok($builder, $lib, \%args) or $fail++;
+        _vars_ok(\&_results_as_tests, $lib, \%args) or $fail++;
     }
 
     return $fail == 0;
 }
 
+sub _results_as_tests {
+    my($file, $exit_code, $results) = @_;
+
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    my $builder = __PACKAGE__->builder;
+    my $is_ok = $builder->ok($exit_code == 0, $file);
+
+    for my $result (@$results) {
+        my ($method, $message) = @$result;
+        $builder->$method($message);
+    }
+
+    return $is_ok;
+}
+
+sub test_vars {
+    my($lib, $result_handler, %args) = @_;
+    return _vars_ok($result_handler, $lib, \%args);
+}
+
 sub vars_ok {
     my($lib, %args) = @_;
-    return _vars_ok(__PACKAGE__->builder, $lib, \%args);
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+    return _vars_ok(\&_results_as_tests, $lib, \%args);
 }
 
 sub _vars_ok {
-    my($builder, $file, $args) = @_;
-
-    local $Test::Builder::Level = $Test::Builder::Level + 1;
+    my($result_handler, $file, $args) = @_;
 
     my $pipe = IO::Pipe->new;
     my $pid = fork();
@@ -65,14 +86,7 @@ sub _vars_ok {
             my $results = thaw(join('', <$pipe>));
             waitpid $pid, 0;
 
-            my $is_ok = $builder->ok($? == 0, $file);
-
-            for my $result (@$results) {
-                my ($method, $message) = @$result;
-                $builder->$method($message);
-            }
-
-            return $is_ok;
+            return $result_handler->($file, $?, $results);
         }
         else { # child
             $pipe->writer;
@@ -439,6 +453,36 @@ explicitly C<< { '$self' => 0 } >> to C<ignore_vars>.
 Tests I<$lib> with I<%args>.
 
 See C<all_vars_ok>.
+
+=head2 test_vars($lib, $result_handler, %args)
+
+This subroutine tests variables, but instead of outputting TAP, calls the
+C<$result_handler> subroutine reference provided with the results of the test.
+
+The C<$result_handler> sub will be called once, with the following arguments:
+
+=over 4
+
+=item * $filename
+
+The file that was checked for unused variables.
+
+=item * $exit_code
+
+The value of C<$?> from the child process that actually did the tests. This
+will be 0 if the tests passed.
+
+=item * $results
+
+This is an array reference which in turn contains zero or more array
+references. Each of those references contains two elements, a L<Test::Builder>
+method, either C<diag> or C<note>, and a message.
+
+If the method is C<diag>, the message contains an actual error. If the method
+is C<notes>, the message contains extra information about the test, but is not
+indicative of an error.
+
+=back
 
 =head1 MECHANISM
 
