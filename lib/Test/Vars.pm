@@ -156,7 +156,7 @@ sub _check_into_stash {
     my($stash, $file, $args, $results) = @_;
     my $fail = 0;
 
-    while(my $key = each %{$stash}){
+    foreach my $key(sort keys %{$stash}){
         my $ref = \$stash->{$key};
 
         next if ref($ref) ne 'GLOB';
@@ -198,7 +198,7 @@ sub _check_into_code {
 
     my $fail = 0;
 
-    while(my(undef, $cv_info) = each %info){
+    foreach my $cv_info(map { $info{$_} } sort keys %info){
         my $pad = $cv_info->{pad};
 
         push @$results, [note => "looking into $cv_info->{name}"] if _VERBOSE > 1;
