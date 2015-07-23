@@ -240,7 +240,7 @@ my $op_enteriter;
 my $op_entereval; # string eval
 my @op_svusers;
 BEGIN{
-    foreach my $op(qw(padsv padav padhv)){
+    foreach my $op(qw(padsv padav padhv multideref)){
         $padops[B::opnumber($op)]++;
     }
     # blead commit 93bad3fd55489cbd split aelemfast into two ops.
@@ -277,7 +277,7 @@ sub _count_padvars {
         if($padname->can('PVX')){
             my $pv = $padname->PVX;
 
-            if($pv ne '&' && !($padname->FLAGS & B::SVpad_OUR)){
+            if(defined $pv && $pv ne '&' && !($padname->FLAGS & B::SVpad_OUR)){
                 my %p;
 
                 $p{name}    = $pv;
@@ -317,6 +317,17 @@ sub _count_padvars {
                 $p->{count}++;
             }
             $stringy_eval_seen = 1;
+            return;
+        }
+
+        # In Perl 5.22+, pad variables can be referred to in ops like
+        # MULTIDEREF, which show up as a B::UNOP_AUX object. This object can
+        # refer to multiple pad variables.
+        if($op->isa('B::UNOP_AUX')) {
+            foreach my $i(grep {!ref}$ op->aux_list($cv)) {
+                $pad[$i]{count}++
+                    if $pad[$i];
+            }
             return;
         }
 
