@@ -1,6 +1,10 @@
 Revision history for Perl extension Test::Vars
 
 {{$NEXT}}
+    - In some corner cases, Test::Vars would try to look inside the body of a
+      stub sub ("sub foo;") and then blow up. This could be triggered by
+      declaring a stub sub and then an attribute with a reader of the same
+      name in a Moose::Role, for example. Reported by Andy Jack.
 
 0.007 2015-08-19T15:54:27Z
     - Fix tests with threaded Perl 5.22+. Reported by Paul Howarth.

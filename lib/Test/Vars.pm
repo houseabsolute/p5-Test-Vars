@@ -192,7 +192,8 @@ sub _check_into_code {
 
     my $cv = B::svref_2object($coderef);
 
-    if($cv->XSUB){
+    # If ROOT is null then the sub is a stub, and has no body for us to check.
+    if($cv->XSUB || $cv->ROOT->isa('B::NULL')){
         return 1;
     }
 
