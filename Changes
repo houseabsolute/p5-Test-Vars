@@ -1,6 +1,8 @@
 Revision history for Perl extension Test::Vars
 
 {{$NEXT}}
+
+0.006 2015-08-19T02:23:16Z
     - This module now calls Test::Builder->diag and ->note _after_ calling
       ->ok. This is more in line with how most test modules work. Patch by Ran
       Eilam.

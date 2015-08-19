@@ -1,20 +1,27 @@
 # NAME
 
-Test::Vars - Detects unused variables
+Test::Vars - Detects unused variables in perl modules
 
 # VERSION
 
-This document describes Test::Vars version 0.005.
+This document describes Test::Vars version 0.006.
 
 # SYNOPSIS
 
     use Test::Vars;
 
-    all_vars_ok(); # check libs in MANIFEST
+    # Check all libs that are listed in the MANIFEST file
+    all_vars_ok();
+
+    # Check an arbitrary file
+    vars_ok('t/lib/MyLib.pm');
+
+    # Ignore some variables while checking
+    vars_ok 't/lib/MyLib2.pm', ignore_vars => [ '$an_unused_var' ];
 
 # DESCRIPTION
 
-Test::Vars finds unused variables in order to keep the source code tidy.
+Test::Vars provides test functions to report unused variables either in an entire distribution or in some files of your choice in order to keep the source code tidy.
 
 # INTERFACE
 
@@ -41,6 +48,32 @@ explicitly `{ '$self' => 0 }` to `ignore_vars`.
 Tests _$lib_ with _%args_.
 
 See `all_vars_ok`.
+
+## test\_vars($lib, $result\_handler, %args)
+
+This subroutine tests variables, but instead of outputting TAP, calls the
+`$result_handler` subroutine reference provided with the results of the test.
+
+The `$result_handler` sub will be called once, with the following arguments:
+
+- $filename
+
+    The file that was checked for unused variables.
+
+- $exit\_code
+
+    The value of `$?` from the child process that actually did the tests. This
+    will be 0 if the tests passed.
+
+- $results
+
+    This is an array reference which in turn contains zero or more array
+    references. Each of those references contains two elements, a [Test::Builder](https://metacpan.org/pod/Test::Builder)
+    method, either `diag` or `note`, and a message.
+
+    If the method is `diag`, the message contains an actual error. If the method
+    is `notes`, the message contains extra information about the test, but is not
+    indicative of an error.
 
 # MECHANISM
 
@@ -73,13 +106,13 @@ to cpan-RT.
 
 # SEE ALSO
 
-[Perl::Critic](http://search.cpan.org/perldoc?Perl::Critic)
+[Perl::Critic](https://metacpan.org/pod/Perl::Critic)
 
-[warnings::unused](http://search.cpan.org/perldoc?warnings::unused)
+[warnings::unused](https://metacpan.org/pod/warnings::unused)
 
-[B](http://search.cpan.org/perldoc?B)
+[B](https://metacpan.org/pod/B)
 
-[Test::Builder::Module](http://search.cpan.org/perldoc?Test::Builder::Module)
+[Test::Builder::Module](https://metacpan.org/pod/Test::Builder::Module)
 
 # AUTHOR
 
@@ -90,4 +123,4 @@ Goro Fuji (gfx) <gfuji(at)cpan.org>
 Copyright (c) 2010, Goro Fuji (gfx). All rights reserved.
 
 This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself. See [perlartistic](http://search.cpan.org/perldoc?perlartistic) for details.
+it under the same terms as Perl itself. See [perlartistic](https://metacpan.org/pod/perlartistic) for details.
