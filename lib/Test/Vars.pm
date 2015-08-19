@@ -3,7 +3,7 @@ use 5.010_000;
 use strict;
 use warnings;
 
-our $VERSION = '0.007';
+our $VERSION = '0.008';
 
 our @EXPORT = qw(all_vars_ok test_vars vars_ok);
 
@@ -427,7 +427,7 @@ Test::Vars - Detects unused variables in perl modules
 
 =head1 VERSION
 
-This document describes Test::Vars version 0.007.
+This document describes Test::Vars version 0.008.
 
 =head1 SYNOPSIS
 
