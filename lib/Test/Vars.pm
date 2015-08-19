@@ -5,12 +5,14 @@ use warnings;
 
 our $VERSION = '0.005';
 
-our @EXPORT = qw(all_vars_ok vars_ok);
+our @EXPORT = qw(all_vars_ok test_vars vars_ok);
 
 use parent qw(Test::Builder::Module);
 
 use B ();
 use ExtUtils::Manifest qw(maniread);
+use IO::Pipe;
+use Storable qw(freeze thaw);
 use Symbol qw(qualify_to_ref);
 
 use constant _VERBOSE       => ($ENV{TEST_VERBOSE} || 0);
@@ -37,33 +39,58 @@ sub all_vars_ok {
 
     $builder->plan(tests => scalar @libs);
 
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
     my $fail = 0;
     foreach my $lib(@libs){
-        _vars_ok($builder, $lib, \%args) or $fail++;
+        _vars_ok(\&_results_as_tests, $lib, \%args) or $fail++;
     }
 
     return $fail == 0;
 }
 
-sub vars_ok {
-    my($lib, %args) = @_;
-    return _vars_ok(__PACKAGE__->builder, $lib, \%args);
-}
-
-sub _vars_ok {
-    my($builder, $file, $args) = @_;
+sub _results_as_tests {
+    my($file, $exit_code, $results) = @_;
 
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
+    my $builder = __PACKAGE__->builder;
+    my $is_ok = $builder->ok($exit_code == 0, $file);
+
+    for my $result (@$results) {
+        my ($method, $message) = @$result;
+        $builder->$method($message);
+    }
+
+    return $is_ok;
+}
+
+sub test_vars {
+    my($lib, $result_handler, %args) = @_;
+    return _vars_ok($result_handler, $lib, \%args);
+}
+
+sub vars_ok {
+    my($lib, %args) = @_;
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+    return _vars_ok(\&_results_as_tests, $lib, \%args);
+}
+
+sub _vars_ok {
+    my($result_handler, $file, $args) = @_;
+
+    my $pipe = IO::Pipe->new;
     my $pid = fork();
     if(defined $pid){
         if($pid != 0) { # self
+            $pipe->reader;
+            my $results = thaw(join('', <$pipe>));
             waitpid $pid, 0;
 
-            return $builder->ok($? == 0, $file);
+            return $result_handler->($file, $?, $results);
         }
         else { # child
-            exit !_check_vars($builder, $file, $args);
+            $pipe->writer;
+            exit !_check_vars($file, $args, $pipe);
         }
     }
     else {
@@ -72,7 +99,10 @@ sub _vars_ok {
 }
 
 sub _check_vars {
-    my($builder, $file, $args) = @_;
+    my($file, $args, $pipe) = @_;
+
+    my @results;
+
     my $package = $file;
 
     if($file =~ /\./){ # $package seems a file
@@ -108,21 +138,25 @@ sub _check_vars {
 
         if($@){
             $@ =~ s/\n .*//xms;
-            $builder->diag("Test::Vars ignores $file because: $@");
+            push @results, [diag => "Test::Vars ignores $file because: $@"];
+            _pipe_results($pipe, @results);
             return 1;
         }
     }
 
-    $builder->note("checking $package in $file ...") if _VERBOSE;
-    return _check_into_stash($builder,
-        *{qualify_to_ref('', $package)}{HASH}, $file, $args);
+    push @results, [note => "checking $package in $file ..."];
+    my $check_result = _check_into_stash(
+        *{qualify_to_ref('', $package)}{HASH}, $file, $args, \@results);
+
+    _pipe_results($pipe, @results);
+    return $check_result;
 }
 
 sub _check_into_stash {
-    my($builder, $stash, $file, $args) = @_;
+    my($stash, $file, $args, $results) = @_;
     my $fail = 0;
 
-    while(my $key = each %{$stash}){
+    foreach my $key(sort keys %{$stash}){
         my $ref = \$stash->{$key};
 
         next if ref($ref) ne 'GLOB';
@@ -134,12 +168,13 @@ sub _check_into_stash {
 
         if(($hashref || $coderef) && $gv->FILE =~ /\Q$file\E\z/xms){
             if($hashref && B::svref_2object($hashref)->NAME){ # stash
-                if(not _check_into_stash($builder, $hashref, $file, $args)){
-                    $fail++;
+                if(not _check_into_stash(
+                    $hashref, $file, $args, $results)){
+                        $fail++;
                 }
             }
             elsif($coderef){
-                if(not _check_into_code($builder, $coderef, $args)){
+                if(not _check_into_code($coderef, $args, $results)){
                     $fail++;
                 }
             }
@@ -150,7 +185,7 @@ sub _check_into_stash {
 }
 
 sub _check_into_code {
-    my($builder, $coderef, $args) = @_;
+    my($coderef, $args, $results) = @_;
 
     my $cv = B::svref_2object($coderef);
 
@@ -159,14 +194,14 @@ sub _check_into_code {
     }
 
     my %info;
-    _count_padvars($cv, \%info);
+    _count_padvars($cv, \%info, $results);
 
     my $fail = 0;
 
-    while(my(undef, $cv_info) = each %info){
+    foreach my $cv_info(map { $info{$_} } sort keys %info){
         my $pad = $cv_info->{pad};
 
-        $builder->note("looking into $cv_info->{name}") if _VERBOSE > 1;
+        push @$results, [note => "looking into $cv_info->{name}"] if _VERBOSE > 1;
 
         foreach my $p(@{$pad}){
             next if !( defined $p && !$p->{outside} );
@@ -180,11 +215,11 @@ sub _check_into_code {
                 }
 
                 my $c = $p->{context} || '';
-                $builder->diag("$p->{name} is used once in $cv_info->{name} $c");
+                push @$results, [diag => "$p->{name} is used once in $cv_info->{name} $c"];
                 $fail++;
             }
             elsif(_VERBOSE > 1){
-                $builder->note("$p->{name} is used $p->{count} times");
+                push @$results, [note => "$p->{name} is used $p->{count} times"];
             }
         }
     }
@@ -193,13 +228,19 @@ sub _check_into_code {
 
 }
 
+sub _pipe_results {
+    my ($pipe, @messages) = @_;
+    print $pipe freeze(\@messages);
+    close $pipe;
+}
+
 my @padops;
 my $op_anoncode;
 my $op_enteriter;
 my $op_entereval; # string eval
 my @op_svusers;
 BEGIN{
-    foreach my $op(qw(padsv padav padhv)){
+    foreach my $op(qw(padsv padav padhv multideref)){
         $padops[B::opnumber($op)]++;
     }
     # blead commit 93bad3fd55489cbd split aelemfast into two ops.
@@ -222,7 +263,7 @@ BEGIN{
 }
 
 sub _count_padvars {
-    my($cv, $global_info) = @_;
+    my($cv, $global_info, $results) = @_;
 
     my %info;
 
@@ -236,7 +277,7 @@ sub _count_padvars {
         if($padname->can('PVX')){
             my $pv = $padname->PVX;
 
-            if($pv ne '&' && !($padname->FLAGS & B::SVpad_OUR)){
+            if(defined $pv && $pv ne '&' && !($padname->FLAGS & B::SVpad_OUR)){
                 my %p;
 
                 $p{name}    = $pv;
@@ -279,6 +320,17 @@ sub _count_padvars {
             return;
         }
 
+        # In Perl 5.22+, pad variables can be referred to in ops like
+        # MULTIDEREF, which show up as a B::UNOP_AUX object. This object can
+        # refer to multiple pad variables.
+        if($op->isa('B::UNOP_AUX')) {
+            foreach my $i(grep {!ref}$ op->aux_list($cv)) {
+                $pad[$i]{count}++
+                    if $pad[$i];
+            }
+            return;
+        }
+
         my $targ = $op->targ;
         return if $targ == 0; # maybe foreach (...)
 
@@ -289,7 +341,7 @@ sub _count_padvars {
         if($optype == $op_anoncode){
             my $anon_cv = $padvars->ARRAYelt($targ);
             if($anon_cv->CvFLAGS & B::CVf_CLONE){
-                my $my_info = _count_padvars($anon_cv, $global_info);
+                my $my_info = _count_padvars($anon_cv, $global_info, $results);
 
                 $my_info->{outside} = \%info;
 
@@ -335,7 +387,7 @@ sub _count_padvars {
         B::walkoptree($root, '_scan_unused_vars');
     }
     else{
-        __PACKAGE__->builder->note("NULL body subroutine $name found");
+        push @$results, [note => "NULL body subroutine $name found"];
     }
 
     %info = (
@@ -412,6 +464,36 @@ explicitly C<< { '$self' => 0 } >> to C<ignore_vars>.
 Tests I<$lib> with I<%args>.
 
 See C<all_vars_ok>.
+
+=head2 test_vars($lib, $result_handler, %args)
+
+This subroutine tests variables, but instead of outputting TAP, calls the
+C<$result_handler> subroutine reference provided with the results of the test.
+
+The C<$result_handler> sub will be called once, with the following arguments:
+
+=over 4
+
+=item * $filename
+
+The file that was checked for unused variables.
+
+=item * $exit_code
+
+The value of C<$?> from the child process that actually did the tests. This
+will be 0 if the tests passed.
+
+=item * $results
+
+This is an array reference which in turn contains zero or more array
+references. Each of those references contains two elements, a L<Test::Builder>
+method, either C<diag> or C<note>, and a message.
+
+If the method is C<diag>, the message contains an actual error. If the method
+is C<notes>, the message contains extra information about the test, but is not
+indicative of an error.
+
+=back
 
 =head1 MECHANISM
 
