@@ -1,6 +1,7 @@
 Revision history for Perl extension Test::Vars
 
 {{$NEXT}}
+    - Fix tests with threaded Perl 5.22+. Reported by Paul Howarth.
 
 0.006 2015-08-19T02:23:16Z
     - This module now calls Test::Builder->diag and ->note _after_ calling
