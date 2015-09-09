@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use File::Basename qw(basename);
+use File::Spec;
 use Test::Tester;
 use Test::More;
 
@@ -40,7 +41,8 @@ foreach my $package ( sort keys %errors ) {
     ok( !$premature, "var_ok($path) had no premature output" );
     is( scalar @results, 1, "got one result from vars_ok($path)" );
     is(
-        $results[0]{fail_diag}, "\tFailed test (t/03_warned.t at line 39)\n",
+        $results[0]{fail_diag},
+        "\tFailed test (" . File::Spec->catfile('t', basename(__FILE__)) . " at line 40)\n",
         'failure message comes from inside this test file'
     );
 
