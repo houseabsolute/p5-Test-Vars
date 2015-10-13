@@ -3,8 +3,10 @@
 use strict;
 use Test::More;
 
+use File::Spec::Functions qw( catfile );
 use Test::Vars;
 
+my $file = catfile( qw( t lib Warned1.pm ) );
 my @unused;
 my $handler = sub {
     push @unused, [@_];
@@ -12,7 +14,7 @@ my $handler = sub {
 
 {
     @unused = ();
-    test_vars('t/lib/Warned1.pm', $handler);
+    test_vars($file, $handler);
 
     my @tb_output = (
         [
@@ -25,7 +27,7 @@ my $handler = sub {
         ]
     );
 
-    is_deeply(\@unused, [['t/lib/Warned1.pm', 256, \@tb_output]], 'test_vars called handler with expected results');
+    is_deeply(\@unused, [[$file, 256, \@tb_output]], 'test_vars called handler with expected results');
 }
 
 {

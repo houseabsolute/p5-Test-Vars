@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use File::Basename qw(basename);
+use File::Spec::Functions qw( catfile );
 use Test::Tester;
 use Test::More;
 
@@ -33,14 +33,13 @@ my %errors = (
 
 foreach my $package ( sort keys %errors ) {
     my $errors = $errors{$package};
-    my $file   = "$package.pm";
-    my $path   = "t/lib/$file";
+    my $path = catfile( qw( t lib ), "$package.pm" );
 
     my ( $premature, @results ) = run_tests( sub { vars_ok($path) } );
     ok( !$premature, "var_ok($path) had no premature output" );
     is( scalar @results, 1, "got one result from vars_ok($path)" );
     is(
-        $results[0]{fail_diag}, "\tFailed test (t/03_warned.t at line 39)\n",
+        $results[0]{fail_diag}, "\tFailed test (t/03_warned.t at line 38)\n",
         'failure message comes from inside this test file'
     );
 
