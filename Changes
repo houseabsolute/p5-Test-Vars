@@ -1,6 +1,8 @@
 Revision history for Perl extension Test::Vars
 
 {{$NEXT}}
+
+0.009 2016-05-21T16:41:58Z
     - On recent Perls (5.22 and 5.24, maybe more) this module could detect an
       unused variable named "$". This was a bogus false positive, as opposed
       to just a missing variable name in the output. Reported by Alexander
