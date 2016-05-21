@@ -283,7 +283,9 @@ sub _count_padvars {
 
             # Under Perl 5.22.0+, $pv can end up as undef in some cases. With
             # a threaded Perl, instead of undef we see an empty string.
-            if(defined $pv && length $pv && $pv ne '&' && !($padname->FLAGS & B::SVpad_OUR)){
+            #
+            # $pv can also end up as just '$' or '&'.
+            if(defined $pv && length $pv && $pv ne '&' && $pv ne '$' && !($padname->FLAGS & B::SVpad_OUR)){
                 my %p;
 
                 $p{name}    = $pv;
