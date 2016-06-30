@@ -12,6 +12,7 @@ my @libs =  qw(
     Foreach
     CompileError
     ImplicitTopic
+    Regex
 );
 
 foreach my $lib(@libs) {
