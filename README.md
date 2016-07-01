@@ -116,7 +116,7 @@ to cpan-RT.
 
 # AUTHOR
 
-Goro Fuji (gfx) <gfuji(at)cpan.org>
+Goro Fuji (gfx) &lt;gfuji(at)cpan.org>
 
 # LICENSE AND COPYRIGHT
 
