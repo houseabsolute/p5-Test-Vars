@@ -70,7 +70,7 @@
          "web" : "https://github.com/gfx/p5-Test-Vars"
       }
    },
-   "version" : "0.009",
+   "version" : "0.010",
    "x_contributors" : [
       "Nicholas Clark <nick@ccl4.org>",
       "Olivier Mengué <dolmen@cpan.org>",
@@ -80,6 +80,7 @@
       "Ran Eilam <ran.eilam@gmail.com>",
       "Dave Rolsky <autarch@urth.org>",
       "Gregory Oschwald <goschwald@maxmind.com>",
-      "FUJI Goro <gfx@users.noreply.github.com>"
+      "FUJI Goro <gfx@users.noreply.github.com>",
+      "FUJI Goro <goro.fuji@ebookjapan.co.jp>"
    ]
 }
