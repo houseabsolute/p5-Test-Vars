@@ -26,7 +26,7 @@ use Test::Vars;
         \@unused,
         [
             [
-                $file,
+                't/lib/StubSub.pm',
                 256,
                 [
                     [

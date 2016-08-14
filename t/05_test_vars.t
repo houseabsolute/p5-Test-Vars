@@ -27,7 +27,7 @@ my $handler = sub {
         ]
     );
 
-    is_deeply(\@unused, [[$file, 256, \@tb_output]], 'test_vars called handler with expected results');
+    is_deeply(\@unused, [["t/lib/Warned1.pm", 256, \@tb_output]], 'test_vars called handler with expected results');
 }
 
 {
