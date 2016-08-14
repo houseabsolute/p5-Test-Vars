@@ -78,6 +78,9 @@ sub vars_ok {
 sub _vars_ok {
     my($result_handler, $file, $args) = @_;
 
+    # Normalize Windows paths.
+    $file =~ s{\\}{/}g;
+
     my $pipe = IO::Pipe->new;
     my $pid = fork();
     if(defined $pid){

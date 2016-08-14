@@ -34,24 +34,25 @@ my %errors = (
 foreach my $package ( sort keys %errors ) {
     my $errors = $errors{$package};
     my $path = catfile( qw( t lib ), "$package.pm" );
+    my $unix_path = "t/lib/$package.pm";
 
     my ( $premature, @results ) = run_tests( sub { vars_ok($path) } );
     ok( !$premature, "var_ok($path) had no premature output" );
     is( scalar @results, 1, "got one result from vars_ok($path)" );
     is(
-        $results[0]{fail_diag}, "\tFailed test (t/03_warned.t at line 38)\n",
+        $results[0]{fail_diag}, "\tFailed test ($0 at line 39)\n",
         'failure message comes from inside this test file'
     );
 
     if ( @{$errors} == 1 ) {
         like(
             $results[0]{diag},
-            _error( @{ $errors->[0] }, $package, $path ),
+            _error( @{ $errors->[0] }, $package, $unix_path ),
             "expected diag() from vars_ok($path)"
         );
     }
     else {
-        my @errors = map { _error( @{$_}, $package, $path ) } @{$errors};
+        my @errors = map { _error( @{$_}, $package, $unix_path ) } @{$errors};
         like(
             $results[0]{diag},
             qr/$errors[0]$errors[1]|$errors[1]$errors[0]/,
