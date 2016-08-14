@@ -39,7 +39,7 @@ foreach my $package ( sort keys %errors ) {
     ok( !$premature, "var_ok($path) had no premature output" );
     is( scalar @results, 1, "got one result from vars_ok($path)" );
     is(
-        $results[0]{fail_diag}, "\tFailed test (t/03_warned.t at line 38)\n",
+        $results[0]{fail_diag}, "\tFailed test ($0 at line 38)\n",
         'failure message comes from inside this test file'
     );
 
