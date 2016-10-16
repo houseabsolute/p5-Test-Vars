@@ -1,6 +1,7 @@
 Revision history for Perl extension Test::Vars
 
 {{$NEXT}}
+    - Fixed tests to pass on Windows. Patch by Michael Schwern. (#26 and #27)
 
 0.010 2016-07-01T03:13:42Z
     - Fix for pp_match in Perl 5.22+ (#23)

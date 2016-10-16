@@ -8,9 +8,10 @@ on build => sub {
 };
 
 on develop => sub {
-   requires 'Test::Spelling', '0.12';
+   requires 'Moose::Role';
    requires 'Pod::Spelling';
    requires 'Test::Pod', '1.14';
    requires 'Test::Pod::Coverage', '1.04';
+   requires 'Test::Spelling', '0.12';
    requires 'Test::Synopsis';
 };

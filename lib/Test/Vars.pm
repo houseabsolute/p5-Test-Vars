@@ -78,6 +78,12 @@ sub vars_ok {
 sub _vars_ok {
     my($result_handler, $file, $args) = @_;
 
+    # Perl sometimes produces Unix style paths even on Windows, which can lead
+    # to us producing error messages with a path like "lib\foo/bar.pm", which
+    # is really confusing. It's simpler to just use Unix style everywhere
+    # internally.
+    $file =~ s{\\}{/}g;
+
     my $pipe = IO::Pipe->new;
     my $pid = fork();
     if(defined $pid){
