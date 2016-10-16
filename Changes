@@ -1,6 +1,8 @@
 Revision history for Perl extension Test::Vars
 
 {{$NEXT}}
+
+0.011 2016-10-16T19:54:15Z
     - Fixed tests to pass on Windows. Patch by Michael Schwern. (#26 and #27)
 
 0.010 2016-07-01T03:13:42Z

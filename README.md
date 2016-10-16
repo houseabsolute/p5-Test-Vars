@@ -4,7 +4,7 @@ Test::Vars - Detects unused variables in perl modules
 
 # VERSION
 
-This document describes Test::Vars version 0.010.
+This document describes Test::Vars version 0.011.
 
 # SYNOPSIS
 
