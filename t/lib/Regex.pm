@@ -9,4 +9,11 @@ sub test {
     return $test =~ /blah/;
 }
 
+sub test2 {
+    my $foo = shift;
+    my $bar = shift;
+
+    $foo ? $bar =~ s{test}{}gr : q{};
+}
+
 1;
