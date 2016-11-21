@@ -9,4 +9,11 @@ sub test {
     return $test =~ /blah/;
 }
 
+sub _fallback_string {
+    my $a = shift;
+    my $b = shift;
+
+    $a ? $b =~ s{test}{}gr : q{};
+}
+
 1;
