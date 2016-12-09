@@ -4,7 +4,7 @@
       "Goro Fuji (gfx) <gfuji(at)cpan.org>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.0.4, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Minilla/v3.0.6, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
@@ -71,7 +71,7 @@
          "web" : "https://github.com/houseabsolute/p5-Test-Vars"
       }
    },
-   "version" : "0.011",
+   "version" : "0.012",
    "x_contributors" : [
       "Nicholas Clark <nick@ccl4.org>",
       "Olivier Mengué <dolmen@cpan.org>",
@@ -79,10 +79,10 @@
       "Fuji, Goro <g.psy.va@gmail.com>",
       "Dmitry Matrosov <amidos@amidos.ru>",
       "Ran Eilam <ran.eilam@gmail.com>",
-      "Gregory Oschwald <goschwald@maxmind.com>",
       "FUJI Goro <gfx@users.noreply.github.com>",
       "FUJI Goro <goro.fuji@ebookjapan.co.jp>",
       "Michael G. Schwern <schwern@pobox.com>",
+      "Gregory Oschwald <goschwald@maxmind.com>",
       "Dave Rolsky <autarch@urth.org>"
    ],
    "x_serialization_backend" : "JSON::PP version 2.27400"

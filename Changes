@@ -1,6 +1,8 @@
 Revision history for Perl extension Test::Vars
 
 {{$NEXT}}
+
+0.012 2016-12-09T23:56:28Z
     - On Perl 5.22+, variables used in a substitution operator ($foo =~
       s/foo/bar/) would be ignored. Reported by Greg Oschwald. (#28)
 
