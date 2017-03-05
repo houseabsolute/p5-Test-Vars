@@ -339,6 +339,15 @@ sub _count_padvars {
         # refer to multiple pad variables.
         if($op->isa('B::UNOP_AUX')) {
             foreach my $i(grep {!ref}$ op->aux_list($cv)) {
+                # There is a bug in 5.24 with multideref aux_list where it can
+                # contain a value which is completely broken. It numifies to
+                # undef when used as an array index but "defined $i" will be
+                # true! We can detect it by comparing its stringified value to
+                # an empty string. This has been fixed in blead.
+                next unless do {
+                    no warnings;
+                    "$i" ne q{};
+                };
                 $pad[$i]{count}++
                     if $pad[$i];
             }
