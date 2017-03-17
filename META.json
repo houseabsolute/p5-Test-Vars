@@ -4,7 +4,7 @@
       "Goro Fuji (gfx) <gfuji(at)cpan.org>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.0.6, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Minilla/v3.0.10, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
@@ -71,7 +71,7 @@
          "web" : "https://github.com/houseabsolute/p5-Test-Vars"
       }
    },
-   "version" : "0.012",
+   "version" : "0.013",
    "x_contributors" : [
       "Nicholas Clark <nick@ccl4.org>",
       "Olivier Mengué <dolmen@cpan.org>",
