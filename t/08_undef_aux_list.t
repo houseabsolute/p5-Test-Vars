@@ -6,7 +6,7 @@ use Test::More;
 use Test::Vars;
 
 unless ( eval { require Test::Output; Test::Output->import; 1 } ) {
-    plan skip_all => 'This test requires Moose::Role';
+    plan skip_all => 'This test requires Test::Output';
 }
 
 stderr_is(
