@@ -1,6 +1,12 @@
 Revision history for Perl extension Test::Vars
 
 {{$NEXT}}
+    - Worked around a very weird bug with B's handling of multideref aux_list
+      values on 5.22 and 5.24. This could cause a warning like "Use of
+      uninitialized value $i in array element at
+      /home/autarch/projects/p5-Test-Vars/lib/Test/Vars.pm line ..." when
+      testing certain Perl constructs for unused vars. This appears to be
+      fixed in blead's B.
 
 0.012 2016-12-09T23:56:28Z
     - On Perl 5.22+, variables used in a substitution operator ($foo =~
