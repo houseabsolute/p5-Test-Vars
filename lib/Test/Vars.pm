@@ -461,7 +461,7 @@ This document describes Test::Vars version 0.013.
 
 =head1 DESCRIPTION
 
-Test::Vars provides test functions to report unused variables either in an entire distribution or in some files of your choice in order to keep the source code tidy.
+Test::Vars provides test functions to report unused variables either in an entire distribution or in some files of your choice in order to keep your source code tidy.
 
 =head1 INTERFACE
 
@@ -531,7 +531,7 @@ C<Test::Vars> is similar to a part of C<Test::Perl::Critic>,but the mechanism
 is different.
 
 While C<Perl::Critic>, the backend of C<Test::Perl::Critic>, scans the source
-code as texts, this modules scans the compiled opcode (or AST: abstract syntax
+code as text, this modules scans the compiled opcodes (or AST: abstract syntax
 tree) using the C<B> module. See also C<B> and its submodules.
 
 =head1 CONFIGURATION
