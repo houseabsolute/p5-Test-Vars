@@ -307,27 +307,50 @@ sub _count_padvars {
         $ix++;
     }
 
-    my $cop;
-
+    my ( $cop_scan, $op_scan ) = _make_scan_subs(\@pad, $cv, $padvars, $global_info, $results, \%info);
     local *B::COP::_scan_unused_vars;
-    *B::COP::_scan_unused_vars = sub{
+    *B::COP::_scan_unused_vars = $cop_scan;
+
+    local *B::OP::_scan_unused_vars;
+    *B::OP::_scan_unused_vars = $op_scan;
+
+    my $name = sprintf('&%s::%s', $cv->GV->STASH->NAME, $cv->GV->NAME);
+
+    my $root = $cv->ROOT;
+    if(${$root}){
+        B::walkoptree($root, '_scan_unused_vars');
+    }
+    else{
+        push @$results, [note => "NULL body subroutine $name found"];
+    }
+
+    %info = (
+        pad  => \@pad,
+        name => $name,
+    );
+
+    return $global_info->{ ${$cv} } = \%info;
+}
+
+sub _make_scan_subs {
+    my ($pad, $cv, $padvars, $global_info, $results, $info) = @_;
+
+    my $cop;
+    my $cop_scan = sub {
         ($cop) = @_;
     };
 
     my $stringy_eval_seen = 0;
-
-    local *B::OP::_scan_unused_vars;
-    *B::OP::_scan_unused_vars = sub {
+    my $op_scan = sub {
         my($op) = @_;
 
         return if $stringy_eval_seen;
 
         my $optype = $op->type;
         return if !defined $padops[ $optype ];
-
         # stringy eval could refer all the my variables
         if($optype == $op_entereval){
-            foreach my $p(@pad){
+            foreach my $p(@$pad){
                 $p->{count}++;
             }
             $stringy_eval_seen = 1;
@@ -348,8 +371,8 @@ sub _count_padvars {
                     no warnings;
                     "$i" ne q{};
                 };
-                $pad[$i]{count}++
-                    if $pad[$i];
+                $pad->[$i]{count}++
+                    if $pad->[$i];
             }
             return;
         }
@@ -357,8 +380,7 @@ sub _count_padvars {
         my $targ = $op->targ;
         return if $targ == 0; # maybe foreach (...)
 
-        my $p = $pad[$targ];
-
+        my $p = $pad->[$targ];
         $p->{count} ||= 0;
 
         if($optype == $op_anoncode){
@@ -366,11 +388,11 @@ sub _count_padvars {
             if($anon_cv->CvFLAGS & B::CVf_CLONE){
                 my $my_info = _count_padvars($anon_cv, $global_info, $results);
 
-                $my_info->{outside} = \%info;
+                $my_info->{outside} = $info;
 
                 foreach my $p(@{$my_info->{pad}}){
                     if(defined $p && $p->{outside_padix}){
-                        $pad[ $p->{outside_padix} ]{count}++;
+                        $pad->[ $p->{outside_padix} ]{count}++;
                     }
                 }
             }
@@ -378,7 +400,6 @@ sub _count_padvars {
         }
         elsif($optype == $op_enteriter or ($op->flags & B::OPf_WANT) == B::OPf_WANT_VOID){
             # if $op is in void context, it is considered "not used"
-
             if(_ckwarn_once($cop)){
                 $p->{context} = sprintf 'at %s line %d', $cop->file, $cop->line;
                 return; # skip
@@ -401,24 +422,9 @@ sub _count_padvars {
         }
 
         $p->{count}++;
-    }; # end _scan_unused_vars()
+    };
 
-    my $name = sprintf('&%s::%s', $cv->GV->STASH->NAME, $cv->GV->NAME);
-
-    my $root = $cv->ROOT;
-    if(${$root}){
-        B::walkoptree($root, '_scan_unused_vars');
-    }
-    else{
-        push @$results, [note => "NULL body subroutine $name found"];
-    }
-
-    %info = (
-        pad  => \@pad,
-        name => $name,
-    );
-
-    return $global_info->{ ${$cv} } = \%info;
+    return ($cop_scan, $op_scan);
 }
 
 sub _ckwarn_once {
