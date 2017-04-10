@@ -12,6 +12,7 @@ use parent qw(Test::Builder::Module);
 use B ();
 use ExtUtils::Manifest qw(maniread);
 use IO::Pipe;
+use List::Util 1.33 qw(all);
 use Storable qw(freeze thaw);
 use Symbol qw(qualify_to_ref);
 
@@ -248,6 +249,7 @@ my @padops;
 my $op_anoncode;
 my $op_enteriter;
 my $op_entereval; # string eval
+my $op_null;
 my @op_svusers;
 BEGIN{
     foreach my $op(qw(padsv padav padhv match multideref subst)){
@@ -266,6 +268,8 @@ BEGIN{
 
     $op_entereval = B::opnumber('entereval');
     $padops[$op_entereval]++;
+
+    $op_null = B::opnumber('null');
 
     foreach my $op(qw(srefgen refgen sassign aassign)){
         $op_svusers[B::opnumber($op)]++;
@@ -409,10 +413,18 @@ sub _make_scan_subs {
             # my($var) = @_;
             #    ^^^^     padsv/non-void context
             #          ^  sassign/void context
+            #
+            # We gather all of the sibling ops that are not NULL. If all of
+            # them are SV-using OPs (see the BEGIN block earlier) _and_ all of
+            # them are in VOID context, then the variable from the first op is
+            # being used once.
+            my @ops;
             for(my $o = $op->next; ${$o} && ref($o) ne 'B::COP'; $o = $o->next){
-                next if !$op_svusers[ $o->type ];
-                next if( ($o->flags & B::OPf_WANT ) != B::OPf_WANT_VOID );
+                push @ops, $o
+                    unless $o->type == $op_null;
+            }
 
+            if (all {$op_svusers[$_->type] && ($_->flags & B::OPf_WANT) == B::OPf_WANT_VOID} @ops){
                 if(_ckwarn_once($cop)){
                     $p->{context} = sprintf 'at %s line %d',
                         $cop->file, $cop->line;
