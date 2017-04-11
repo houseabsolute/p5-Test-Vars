@@ -4,7 +4,7 @@ Test::Vars - Detects unused variables in perl modules
 
 # VERSION
 
-This document describes Test::Vars version 0.013.
+This document describes Test::Vars version 0.014.
 
 # SYNOPSIS
 
@@ -21,7 +21,7 @@ This document describes Test::Vars version 0.013.
 
 # DESCRIPTION
 
-Test::Vars provides test functions to report unused variables either in an entire distribution or in some files of your choice in order to keep the source code tidy.
+Test::Vars provides test functions to report unused variables either in an entire distribution or in some files of your choice in order to keep your source code tidy.
 
 # INTERFACE
 
@@ -81,7 +81,7 @@ The `$result_handler` sub will be called once, with the following arguments:
 is different.
 
 While `Perl::Critic`, the backend of `Test::Perl::Critic`, scans the source
-code as texts, this modules scans the compiled opcode (or AST: abstract syntax
+code as text, this modules scans the compiled opcodes (or AST: abstract syntax
 tree) using the `B` module. See also `B` and its submodules.
 
 # CONFIGURATION

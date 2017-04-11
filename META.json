@@ -54,6 +54,7 @@
       "runtime" : {
          "requires" : {
             "B" : "0",
+            "List::Util" : "1.33",
             "parent" : "0",
             "perl" : "5.010000"
          }
@@ -71,7 +72,7 @@
          "web" : "https://github.com/houseabsolute/p5-Test-Vars"
       }
    },
-   "version" : "0.013",
+   "version" : "0.014",
    "x_contributors" : [
       "Nicholas Clark <nick@ccl4.org>",
       "Olivier Mengué <dolmen@cpan.org>",
