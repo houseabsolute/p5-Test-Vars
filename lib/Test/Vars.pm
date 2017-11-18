@@ -169,6 +169,12 @@ sub _check_into_stash {
     foreach my $key(sort keys %{$stash}){
         my $ref = \$stash->{$key};
 
+        if (ref $$ref eq 'CODE') {
+            # reify the glob and let perl figure out what to put in GvFILE.
+            no strict 'refs';
+            () = *{B::svref_2object($stash)->NAME . "::$key"};
+        }
+
         next if ref($ref) ne 'GLOB';
 
         my $gv = B::svref_2object($ref);
