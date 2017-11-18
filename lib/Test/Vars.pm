@@ -169,6 +169,15 @@ sub _check_into_stash {
     foreach my $key(sort keys %{$stash}){
         my $ref = \$stash->{$key};
 
+        if (ref ${$ref} eq 'CODE') {
+            # Reify the glob and let perl figure out what to put in
+            # GvFILE. This is needed for the optimization added in 5.27.6 that
+            # stores coderefs directly in the stash instead of in a typeglob
+            # in the stash.
+            no strict 'refs';
+            () = *{B::svref_2object($stash)->NAME . "::$key"};
+        }
+
         next if ref($ref) ne 'GLOB';
 
         my $gv = B::svref_2object($ref);
