@@ -545,7 +545,7 @@ indicative of an error.
 
 =head1 MECHANISM
 
-C<Test::Vars> is similar to a part of C<Test::Perl::Critic>,but the mechanism
+C<Test::Vars> is similar to a part of C<Test::Perl::Critic>, but the mechanism
 is different.
 
 While C<Perl::Critic>, the backend of C<Test::Perl::Critic>, scans the source
