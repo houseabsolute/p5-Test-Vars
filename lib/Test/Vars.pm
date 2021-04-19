@@ -261,7 +261,7 @@ my $op_entereval; # string eval
 my $op_null;
 my @op_svusers;
 BEGIN{
-    foreach my $op(qw(padsv padav padhv match multideref subst)){
+    foreach my $op(qw(padsv padav padhv padcv match multideref subst)){
         $padops[B::opnumber($op)]++;
     }
     # blead commit 93bad3fd55489cbd split aelemfast into two ops.
