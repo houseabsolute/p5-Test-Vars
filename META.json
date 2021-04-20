@@ -78,7 +78,7 @@
          "web" : "https://github.com/houseabsolute/p5-Test-Vars"
       }
    },
-   "version" : "0.014",
+   "version" : "0.015",
    "x_contributors" : [
       "Dave Rolsky <autarch@urth.org>",
       "Dmitry Matrosov <amidos@amidos.ru>",
