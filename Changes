@@ -2,6 +2,7 @@ Revision history for Perl extension Test::Vars
 
 {{$NEXT}}
 
+    - Support use of lexical subroutines (#41)
     - Account for subroutines stored directly in the stash in 5.27.6+. Fixed
       by sprout. (#34).
 
