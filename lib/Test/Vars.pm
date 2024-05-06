@@ -260,6 +260,8 @@ my $op_enteriter;
 my $op_entereval; # string eval
 my $op_null;
 my @op_svusers;
+my $padsv_store;
+my $aelemfastlex_store;
 BEGIN{
     foreach my $op(qw(padsv padav padhv padcv match multideref subst)){
         $padops[B::opnumber($op)]++;
@@ -268,6 +270,18 @@ BEGIN{
     # Prior to that, 'aelemfast' handled lexicals too.
     my $aelemfast = B::opnumber('aelemfast_lex');
     $padops[$aelemfast == -1 ? B::opnumber('aelemfast') : $aelemfast]++;
+
+    # The 5.37 development cycle introduced two new ops to account for.
+    $padsv_store = B::opnumber('padsv_store');
+    if ($padsv_store != -1) {
+        $padops[$padsv_store]++;
+        $op_svusers[$padsv_store]++;
+    }
+    $aelemfastlex_store = B::opnumber('aelemfastlex_store');
+    if ($aelemfastlex_store != -1) {
+        $padops[$aelemfastlex_store]++;
+        $op_svusers[$aelemfastlex_store]++;
+    }
 
     $op_anoncode = B::opnumber('anoncode');
     $padops[$op_anoncode]++;
@@ -433,7 +447,8 @@ sub _make_scan_subs {
                     unless $o->type == $op_null;
             }
 
-            if (all {$op_svusers[$_->type] && ($_->flags & B::OPf_WANT) == B::OPf_WANT_VOID} @ops){
+            if (all {$op_svusers[$_->type] && (($_->flags & B::OPf_WANT) == B::OPf_WANT_VOID)
+                && ($_->type != $padsv_store) && ($_->type != $aelemfastlex_store) } @ops){
                 if(_ckwarn_once($cop)){
                     $p->{context} = sprintf 'at %s line %d',
                         $cop->file, $cop->line;
