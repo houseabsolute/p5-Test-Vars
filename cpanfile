@@ -4,7 +4,7 @@ requires 'perl', '5.010';
 requires 'List::Util', '1.33';
 
 on build => sub {
-    requires 'ExtUtils::MakeMaker', '6.59';
+    requires 'Module::Build::Tiny';
 };
 
 on test => sub {
