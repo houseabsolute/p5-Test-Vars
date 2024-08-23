@@ -4,7 +4,7 @@
       "Goro Fuji (gfx) <gfuji(at)cpan.org>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.1.11, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Minilla/v3.1.25, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
@@ -38,7 +38,6 @@
       },
       "develop" : {
          "requires" : {
-            "Moose::Role" : "0",
             "Pod::Spelling" : "0",
             "Test::CPAN::Meta" : "0",
             "Test::MinimumVersion::Fast" : "0.04",
@@ -60,6 +59,7 @@
       },
       "test" : {
          "requires" : {
+            "Moose::Role" : "0",
             "Test::More" : "0.88",
             "Test::Output" : "0",
             "Test::Tester" : "0"
@@ -74,11 +74,11 @@
       "homepage" : "https://github.com/houseabsolute/p5-Test-Vars",
       "repository" : {
          "type" : "git",
-         "url" : "git://github.com/houseabsolute/p5-Test-Vars.git",
+         "url" : "https://github.com/houseabsolute/p5-Test-Vars.git",
          "web" : "https://github.com/houseabsolute/p5-Test-Vars"
       }
    },
-   "version" : "0.015",
+   "version" : "0.015_001",
    "x_contributors" : [
       "Dave Rolsky <autarch@urth.org>",
       "Dmitry Matrosov <amidos@amidos.ru>",
@@ -87,12 +87,14 @@
       "FUJI Goro <goro.fuji@ebookjapan.co.jp>",
       "Fuji, Goro <g.psy.va@gmail.com>",
       "Gregory Oschwald <goschwald@maxmind.com>",
+      "James E Keenan <jkeenan@cpan.org>",
       "Michael G. Schwern <schwern@pobox.com>",
       "Nicholas Clark <nick@ccl4.org>",
       "Olivier Mengué <dolmen@cpan.org>",
       "Ran Eilam <ran.eilam@gmail.com>",
+      "Richard Leach <richardleach@users.noreply.github.com>",
       "cpansprout <cpansprout@gmail.com>"
    ],
-   "x_serialization_backend" : "JSON::PP version 4.04",
+   "x_serialization_backend" : "JSON::PP version 4.16",
    "x_static_install" : 1
 }
