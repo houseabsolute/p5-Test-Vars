@@ -1,6 +1,8 @@
 Revision history for Perl extension Test::Vars
 
-{{$NEXT}}
+0.015_001 2024-09-03T13:26:53-04:00
+
+    - Development version.
 
 0.015 2021-04-20T13:52:33Z
 

@@ -486,7 +486,7 @@ Test::Vars - Detects unused variables in perl modules
 
 =head1 VERSION
 
-This document describes Test::Vars version 0.015.
+This document describes Test::Vars version 0.015_001.
 
 =head1 SYNOPSIS
 
