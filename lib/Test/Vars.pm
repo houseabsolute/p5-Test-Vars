@@ -3,7 +3,7 @@ use 5.010_000;
 use strict;
 use warnings;
 
-our $VERSION = '0.015_002';
+our $VERSION = '0.015_003';
 
 our @EXPORT = qw(all_vars_ok test_vars vars_ok);
 
