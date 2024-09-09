@@ -111,4 +111,7 @@ unless ( eval { ExtUtils::MakeMaker->VERSION(6.63_03) } ) {
 delete $WriteMakefileArgs{CONFIGURE_REQUIRES}
   unless eval { ExtUtils::MakeMaker->VERSION(6.52) };
 
-WriteMakefile(%WriteMakefileArgs);
+#WriteMakefile(%WriteMakefileArgs);
+my $mm = WriteMakefile(%WriteMakefileArgs);
+require Data::Dump;
+Data::Dump::pp($mm)
