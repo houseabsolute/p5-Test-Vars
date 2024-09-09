@@ -42,17 +42,25 @@ my $meta = {
       "runtime" => {
          "requires" => {
             "B" => "0",
+            "ExtUtils::Manifest" => "0",
+            "IO::Pipe" => "0",
             "List::Util" => "1.33",
             "parent" => "0",
-            "perl" => "5.010000"
+            "perl" => "5.010000",
+            "Storable" => "0",
+            "Symbol" => "0",
          }
       },
       "test" => {
          "requires" => {
+            "File::Spec::Functions" => "0",
             "Test::More" => "0.88",
+            "Test::Tester" => "0",
+         },
+         "recommends" => {
+            "Moose::Role" => "0",
             "Test::Output" => "0",
-            "Test::Tester" => "0"
-         }
+         },
       },
     }, # END "prereqs"
    "provides" => {
@@ -172,21 +180,8 @@ else {
   $WriteMakefileArgs{PREREQ_PM}          ||= deps('configure', 'build', 'test', 'runtime');
 }
 
-{
-  my ($minperl) = reverse sort(
-    grep defined && /^[0-9]+(\.[0-9]+)?$/,
-    map $meta->{prereqs}{$_}{requires}{perl},
-    qw( configure build runtime )
-  );
-
-  if (defined($minperl)) {
-    die "Installing $meta->{name} requires Perl >= $minperl"
-      unless $] >= $minperl;
-
-    $WriteMakefileArgs{MIN_PERL_VERSION} ||= $minperl
-      if $EUMM >= 6.48;
-  }
-}
+my $minperl = min_perl_version($meta);
+$WriteMakefileArgs{MIN_PERL_VERSION} = $EUMM >= 6.48 ? $minperl : '';
 
 WriteMakefile(%WriteMakefileArgs);
 
@@ -199,12 +194,29 @@ WriteMakefile(%WriteMakefileArgs);
 sub deps { # Note: Not fully encapsulated; presumes $meta
   my %r;
   for my $stage (@_) {
-    for my $dep (keys %{$meta->{prereqs}{$stage}{requires}}) {
-      next if $dep eq 'perl';
-      my $ver = $meta->{prereqs}{$stage}{requires}{$dep};
-      $r{$dep} = $ver if !exists($r{$dep}) || $ver >= $r{$dep};
+    for my $degree (qw| requires recommends |) {
+      for my $dep (keys %{$meta->{prereqs}{$stage}{$degree}}) {
+        next if $dep eq 'perl';
+        my $ver = $meta->{prereqs}{$stage}{$degree}{$dep};
+        $r{$dep} = $ver if !exists($r{$dep}) || $ver >= $r{$dep};
+      }
     }
   }
   return \%r;
 }
 
+sub min_perl_version {
+  my $meta = shift;
+  my ($minperl) = reverse sort(
+    grep defined && /^[0-9]+(\.[0-9]+)?$/,
+    map $meta->{prereqs}{$_}{requires}{perl},
+    qw( configure build runtime )
+  );
+
+  if (defined($minperl)) {
+    die "Installing $meta->{name} requires Perl >= $minperl"
+      unless $] >= $minperl;
+  }
+
+  return $minperl;
+}
