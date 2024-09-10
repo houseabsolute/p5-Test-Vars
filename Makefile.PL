@@ -119,28 +119,7 @@ my %dynamic_config;
 # some conflicts with, e.g., Kavorka are listed.  (For Test::Vars, this will
 # probably have no effect.)
 
-for my $stage (keys %{$meta->{prereqs}}) {
-  my $conflicts = $meta->{prereqs}{$stage}{conflicts} or next;
-  eval { require CPAN::Meta::Requirements } or last;
-  $conflicts = 'CPAN::Meta::Requirements'->from_string_hash($conflicts);
-
-  for my $module ($conflicts->required_modules) {
-    eval "require $module" or next;
-    my $installed = eval(sprintf('$%s::VERSION', $module));
-    $conflicts->accepts_module($module, $installed) or next;
-
-    my $message = "\n".
-      "** This version of $meta->{name} conflicts with the version of\n".
-      "** module $module ($installed) you have installed.\n";
-    die($message . "\n" . "Bailing out")
-      if $stage eq 'build' || $stage eq 'configure';
-
-    $message .= "**\n".
-      "** It's strongly recommended that you update it after\n".
-      "** installing this version of $meta->{name}.\n";
-    warn("$message\n");
-  }
-}
+handle_conflicts($meta);
 
 # 4. Create %WriteMakefileArgs.  Here we begin to create the data structure
 # traditionally passed to ExtUtils::MakeMaker::WriteMakefile().
@@ -159,7 +138,7 @@ my %WriteMakefileArgs = (
   LICENSE         => ($EUMM >= 6.3001 ? $meta->{license}[0] : ''),
   EXE_FILES       => [],
   NAME            => do { my $n = $meta->{name}; $n =~ s/-/::/g; $n },
-  test            => { TESTS => "t/*.t" },
+  test            => { TESTS => ($ENV{PERL_AUTHOR_TESTING} ? "t/*.t xt/*.t" : "t/*.t") },
   ($EUMM < 6.46 ? () :  (META_MERGE => $for_meta_merge) ),
   %dynamic_config,
 );
@@ -226,3 +205,31 @@ sub min_perl_version {
 
   return $minperl;
 }
+
+sub handle_conflicts {
+    my $meta = shift;
+    for my $stage (keys %{$meta->{prereqs}}) {
+      my $conflicts = $meta->{prereqs}{$stage}{conflicts} or next;
+      eval { require CPAN::Meta::Requirements } or last;
+      $conflicts = 'CPAN::Meta::Requirements'->from_string_hash($conflicts);
+
+      for my $module ($conflicts->required_modules) {
+        eval "require $module" or next;
+        my $installed = eval(sprintf('$%s::VERSION', $module));
+        $conflicts->accepts_module($module, $installed) or next;
+
+        my $message = "\n".
+          "** This version of $meta->{name} conflicts with the version of\n".
+          "** module $module ($installed) you have installed.\n";
+        die($message . "\n" . "Bailing out")
+          if $stage eq 'build' || $stage eq 'configure';
+
+        $message .= "**\n".
+          "** It's strongly recommended that you update it after\n".
+          "** installing this version of $meta->{name}.\n";
+        warn("$message\n");
+      }
+    }
+    return 1;
+}
+
