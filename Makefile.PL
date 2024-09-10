@@ -199,3 +199,23 @@ sub min_perl_version {
   return $minperl;
 }
 
+
+# --- MakeMaker overrides ---
+# inspired by Devel::NYTProf's Makefile.PL
+
+package MY;
+
+# add some extra utility targets to the make file
+sub post_constants {
+    q{
+
+AUTHOR_TEST_FILES = "t/*.t xt/*.t"
+
+test_author :: subdirs-test_dynamic
+	PERL_DL_NONLAZY=1 $(FULLPERLRUN) "-MExtUtils::Command::MM" "-MTest::Harness" "-e" "undef *Test::Harness::Switches; test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')" $(AUTHOR_TEST_FILES)
+
+atest: test_author
+
+}
+}
+
