@@ -114,14 +114,7 @@ my %dynamic_config;
 
 # TK
 
-# 3. Handle any conflicts among the 'stages' which are the keys of the
-# elements of $meta->{prereqs}.  In Type::Tiny, prereqs->runtime->conflicts
-# some conflicts with, e.g., Kavorka are listed.  (For Test::Vars, this will
-# probably have no effect.)
-
-# handle_conflicts($meta);
-
-# 4. Create %WriteMakefileArgs.  Here we begin to create the data structure
+# 3. Create %WriteMakefileArgs.  Here we begin to create the data structure
 # traditionally passed to ExtUtils::MakeMaker::WriteMakefile().
 
 # %explicits: elements in $meta which we handle explicitly and which therefore
@@ -204,32 +197,5 @@ sub min_perl_version {
   }
 
   return $minperl;
-}
-
-sub handle_conflicts {
-    my $meta = shift;
-    for my $stage (keys %{$meta->{prereqs}}) {
-      my $conflicts = $meta->{prereqs}{$stage}{conflicts} or next;
-      eval { require CPAN::Meta::Requirements } or last;
-      $conflicts = 'CPAN::Meta::Requirements'->from_string_hash($conflicts);
-
-      for my $module ($conflicts->required_modules) {
-        eval "require $module" or next;
-        my $installed = eval(sprintf('$%s::VERSION', $module));
-        $conflicts->accepts_module($module, $installed) or next;
-
-        my $message = "\n".
-          "** This version of $meta->{name} conflicts with the version of\n".
-          "** module $module ($installed) you have installed.\n";
-        die($message . "\n" . "Bailing out")
-          if $stage eq 'build' || $stage eq 'configure';
-
-        $message .= "**\n".
-          "** It's strongly recommended that you update it after\n".
-          "** installing this version of $meta->{name}.\n";
-        warn("$message\n");
-      }
-    }
-    return 1;
 }
 
