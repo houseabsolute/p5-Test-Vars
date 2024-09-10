@@ -125,7 +125,7 @@ my $for_meta_merge = { map { $_ => $meta->{$_} } grep { ! $explicits{$_} } keys 
 
 my %WriteMakefileArgs = (
   ABSTRACT_FROM   => $meta->{x_abstract_from},
-  AUTHOR          => ($EUMM >= 6.5702 ? $meta->{author} : $meta->{author}[0]),
+  AUTHOR          => ($EUMM >= 6.5702 ? $meta->{author}[0] : $meta->{author}),
   DISTNAME        => $meta->{name},
   VERSION_FROM    => $meta->{x_version_from},
   LICENSE         => ($EUMM >= 6.3001 ? $meta->{license}[0] : ''),
