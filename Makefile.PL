@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use ExtUtils::MakeMaker 6.17;
+#use Data::Dump qw( dd pp );
 
 my $EUMM = eval( $ExtUtils::MakeMaker::VERSION );
 
@@ -14,7 +15,7 @@ my $meta = {
   "generated_by"            => "ExtUtils::MakeMaker version 7.70, CPAN::Meta::Converter version 2.150010",
   "license"                 => ["perl_5"],
   "meta-spec"               => {
-                                 url => "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+                                 url => "https://metacpan.org/pod/CPAN::Meta::Spec",
                                  version => 2,
                                },
   "name"                    => "Test-Vars",
@@ -115,8 +116,8 @@ my %dynamic_config;
 
 # 3. Handle any conflicts among the 'stages' which are the keys of the
 # elements of $meta->{prereqs}.  In Type::Tiny, prereqs->runtime->conflicts
-# some conflicts with, e.g., Kavorka are listed.  (I can probably skip this
-# for Test::Vars.)
+# some conflicts with, e.g., Kavorka are listed.  (For Test::Vars, this will
+# probably have no effect.)
 
 for my $stage (keys %{$meta->{prereqs}}) {
   my $conflicts = $meta->{prereqs}{$stage}{conflicts} or next;
@@ -144,19 +145,24 @@ for my $stage (keys %{$meta->{prereqs}}) {
 # 4. Create %WriteMakefileArgs.  Here we begin to create the data structure
 # traditionally passed to ExtUtils::MakeMaker::WriteMakefile().
 
+# %explicits: elements in $meta which we handle explicitly and which therefore
+# do not need to be in META_MERGE
+
+my %explicits = map {$_ => 1} qw( author license name x_abstract_from x_version_from );
+my $for_meta_merge = { map { $_ => $meta->{$_} } grep { ! $explicits{$_} } keys %{$meta} };
+
 my %WriteMakefileArgs = (
   ABSTRACT_FROM   => $meta->{x_abstract_from},
   AUTHOR          => ($EUMM >= 6.5702 ? $meta->{author} : $meta->{author}[0]),
   DISTNAME        => $meta->{name},
   VERSION_FROM    => $meta->{x_version_from},
+  LICENSE         => ($EUMM >= 6.3001 ? $meta->{license}[0] : ''),
   EXE_FILES       => [],
   NAME            => do { my $n = $meta->{name}; $n =~ s/-/::/g; $n },
   test            => { TESTS => "t/*.t" },
+  ($EUMM < 6.46 ? () :  (META_MERGE => $for_meta_merge) ),
   %dynamic_config,
 );
-# Can LICENSE be handled like AUTHOR above; See EUMM changes for 6.3001
-
-$WriteMakefileArgs{LICENSE} = $meta->{license}[0] if $EUMM >= 6.3001;
 
 my ($build_requires, $configure_requires, $runtime_requires, $test_requires);
 # Verify EUMM versions from Changes
