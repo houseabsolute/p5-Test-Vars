@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 use ExtUtils::MakeMaker 6.17;
-#use Data::Dump qw( dd pp );
 
 my $EUMM = eval( $ExtUtils::MakeMaker::VERSION );
 
@@ -67,7 +66,7 @@ my $meta = {
    "provides" => {
       "Test::Vars" => {
          "file" => "lib/Test/Vars.pm",
-         "version" => "0.015_002"
+         "version" => "0.015_004",
       }
    },
   "release_status"          => "unstable",
