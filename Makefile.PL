@@ -119,7 +119,7 @@ my %dynamic_config;
 # some conflicts with, e.g., Kavorka are listed.  (For Test::Vars, this will
 # probably have no effect.)
 
-handle_conflicts($meta);
+# handle_conflicts($meta);
 
 # 4. Create %WriteMakefileArgs.  Here we begin to create the data structure
 # traditionally passed to ExtUtils::MakeMaker::WriteMakefile().
