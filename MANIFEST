@@ -49,3 +49,4 @@ xt/01_pod-spell.t
 xt/02_pod.t
 xt/03_pod-coverage.t
 xt/04_synopsis.t
+xt/05_test-meta.t
