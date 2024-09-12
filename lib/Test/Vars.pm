@@ -582,9 +582,9 @@ C<TEST_VERBOSE = 1 | 2 > shows the way this module works.
 
 =head1 CAVEATS
 
-https://rt.cpan.org/Ticket/Display.html?id=60018
+https://github.com/houseabsolute/p5-Test-Vars/issues/56
 
-https://rt.cpan.org/Ticket/Display.html?id=82411
+https://github.com/houseabsolute/p5-Test-Vars/issues/55
 
 =head1 DEPENDENCIES
 
