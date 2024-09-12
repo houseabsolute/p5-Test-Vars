@@ -16,4 +16,9 @@ vars_ok($file, ignore_vars => { '$self' => 1 });
 $file = catfile( qw( t lib CaretVariable.pm ) );
 vars_ok($file);
 
+TODO: {
+    local $TODO = 'https://github.com/houseabsolute/p5-Test-Vars/issues/43';
+    vars_ok( 't/lib/FinalVar.pm' );
+}
+
 done_testing;
