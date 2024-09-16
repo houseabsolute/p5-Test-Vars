@@ -66,10 +66,10 @@ my $meta = {
    "provides" => {
       "Test::Vars" => {
          "file" => "lib/Test/Vars.pm",
-         "version" => "0.016",
+         "version" => "0.017",
       }
    },
-  "release_status"          => "unstable",
+  "release_status"          => "stable",
   "resources" => {
       "bugtracker" => {
          "web" => "https://github.com/houseabsolute/p5-Test-Vars/issues"
