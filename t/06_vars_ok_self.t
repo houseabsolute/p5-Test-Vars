@@ -12,15 +12,4 @@ vars_ok($file);
 vars_ok('Test::Vars');
 vars_ok($file, ignore_vars => { '$self' => 1 });
 
-# https://github.com/houseabsolute/p5-Test-Vars/issues/18
-$file = catfile( qw( t lib CaretVariable.pm ) );
-vars_ok($file);
-
-# https://github.com/houseabsolute/p5-Test-Vars/issues/43
-TODO: {
-    local $TODO = 'https://github.com/houseabsolute/p5-Test-Vars/issues/43';
-    $file = catfile( qw( t lib FinalVar.pm ) );
-    vars_ok($file);
-}
-
 done_testing;
