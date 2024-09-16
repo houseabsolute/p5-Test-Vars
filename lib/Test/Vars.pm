@@ -3,7 +3,7 @@ use 5.010_000;
 use strict;
 use warnings;
 
-our $VERSION = '0.015_006';
+our $VERSION = '0.016';
 
 our @EXPORT = qw(all_vars_ok test_vars vars_ok);
 
@@ -486,7 +486,7 @@ Test::Vars - Detects unused variables in perl modules
 
 =head1 VERSION
 
-This document describes Test::Vars version 0.015_001.
+This document describes Test::Vars version 0.016.
 
 =head1 SYNOPSIS
 
@@ -503,7 +503,9 @@ This document describes Test::Vars version 0.015_001.
 
 =head1 DESCRIPTION
 
-Test::Vars provides test functions to report unused variables either in an entire distribution or in some files of your choice in order to keep your source code tidy.
+Test::Vars provides test functions to report unused variables either in an
+entire distribution or in some files of your choice in order to keep your
+source code tidy.
 
 =head1 INTERFACE
 
@@ -582,9 +584,10 @@ C<TEST_VERBOSE = 1 | 2 > shows the way this module works.
 
 =head1 CAVEATS
 
-https://github.com/houseabsolute/p5-Test-Vars/issues/56
-
-https://github.com/houseabsolute/p5-Test-Vars/issues/55
+Over time there have been reported a number of cases where Test-Vars fails to
+report unused variables.  You can review most of these cases by going to our
+issue tracker on GitHub and selecting issues with the C<Bug> label:
+L<https://github.com/houseabsolute/p5-Test-Vars/issues?q=is%3Aopen+is%3Aissue+label%3ABug>
 
 =head1 DEPENDENCIES
 
@@ -592,9 +595,9 @@ Perl 5.10.0 or later.
 
 =head1 BUGS
 
-All complex software has bugs lurking in it, and this module is no
-exception. If you find a bug please either email me, or add the bug
-to cpan-RT.
+Please report new issues at our issue tracker on GitHub:
+L<https://github.com/houseabsolute/p5-Test-Vars/issues>.  We no longer use
+rt.cpan.org for bug reports.
 
 =head1 SEE ALSO
 

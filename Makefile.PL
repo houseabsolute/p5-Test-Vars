@@ -66,7 +66,7 @@ my $meta = {
    "provides" => {
       "Test::Vars" => {
          "file" => "lib/Test/Vars.pm",
-         "version" => "0.015_006",
+         "version" => "0.016",
       }
    },
   "release_status"          => "unstable",
