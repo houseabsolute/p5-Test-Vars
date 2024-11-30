@@ -12,4 +12,9 @@ vars_ok($file);
 vars_ok('Test::Vars');
 vars_ok($file, ignore_vars => { '$self' => 1 });
 
+TODO: {
+    local $TODO = 'https://github.com/houseabsolute/p5-Test-Vars/issues/43';
+    vars_ok( 't/lib/FinalVar.pm' );
+}
+
 done_testing;
