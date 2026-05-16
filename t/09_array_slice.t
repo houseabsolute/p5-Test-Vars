@@ -3,10 +3,6 @@
 use strict;
 use Test::More;
 
-unless ( eval "require Moose::Role; 1;" ) {
-    plan skip_all => 'This test requires Moose::Role';
-}
-
 use File::Spec::Functions qw( catfile );
 use Test::Vars;
 
